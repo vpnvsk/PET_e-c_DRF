@@ -30,6 +30,7 @@ class Order(models.Model):
     def get_cart_items(self):
         return self.items.all()
     
+    @property
     def get_cart_total(self):
         
         return sum( [item.product.price * item.quantity for item in self.items.all()] )

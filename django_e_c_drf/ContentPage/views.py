@@ -35,7 +35,7 @@ class ProductDetailedView(APIView):
             ip = get_client_ip(request)
             
 
-            order_qs = Order.objects.get_or_create(ip=ip)
+            order_qs = Order.objects.get_or_create(ip=ip, is_ordered = False)
             order = order_qs[0]
             print(order.items.all())
             
