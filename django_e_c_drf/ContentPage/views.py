@@ -6,7 +6,7 @@ from rest_framework.views import APIView
 from rest_framework import viewsets
 
 
-from .models import Products
+from .models import Products, Size
 from .serializers import ProductListSerializers, ProductDetailedSerializer, CreateOrderItemSerializer
 from cart.service import get_client_ip
 from cart.models import Order, OrderItem
@@ -28,30 +28,74 @@ class ProductDetailedView(APIView):
         return Response(serializer.data)
     
     def post(self, request, pk):
-        serializer = CreateOrderItemSerializer( data=request.data)
+        serializer = CreateOrderItemSerializer(data = request.data)
         print(serializer.initial_data)
+        ip = get_client_ip(request)
+        
+
+        order, created = Order.objects.get_or_create(ip = ip, is_ordered = False)
+        
         if serializer.is_valid():
-            product_ = serializer.save()
-            ip = get_client_ip(request)
-            
+            print(serializer.data['quantity'])
+            print(serializer.data['quantity'] == 0)
+            print(type(serializer.data['quantity']))
 
-            order_qs = Order.objects.get_or_create(ip=ip, is_ordered = False)
-            order = order_qs[0]
-            print(order.items.all())
-            
 
-            o = order.items.filter(product = product_.product,
-            size = product_.size,)
-            if o.exists():
-                print('hello from if')
-                ord = o[0]
-                print(ord.quantity)
-                o.update(quantity=F('quantity')+product_.quantity) 
+            if serializer.data['quantity'] == 0:
                 
-                
+                ord = get_object_or_404(OrderItem,
+                                        product = Products.objects.get(id = serializer.data['product']),
+                                        size = Size.objects.get(id = serializer.data['size']),
+                                        is_ordered = False,
+                                        order = order,
+                                        )               
             else:
-                print('hello from else')
-                order.items.add(product_.id)
+
+                order_item, created = OrderItem.objects.get_or_create(
+                    product = Products.objects.get(id = serializer.data['product']),
+                    size = Size.objects.get(id = serializer.data['size']),
+                    is_ordered = False,
+                    order = order,
+                )
+                if created:
+                    order_item.quantity = serializer.data['quantity']
+                    order_item.save()
+                else:
+                    delete_var = order_item.quantity + serializer.data['quantity']
+                    if delete_var == 0:
+                        order_item.delete()
+                    else:
+                        order_item.quantity = F('quantity') + serializer.data['quantity']   
+                        order_item.save()
+                    
+                    
+            # product_ = serializer.save()
+
+            
+            # order = Order.objects.get_or_create(ip = ip, is_ordered = False)
+            # product_.order.add(order.id)
+            # order_qs = Order.objects.get_or_create(ip=ip, is_ordered = False)
+            # order = order_qs[0]
+            # print(order.items.all())
+            
+
+            # o = order.items.filter(product = product_.product,
+            # size = product_.size,)
+            # if o.exists():
+            #     print('hello from if')
+            #     ord = o[0]
+            #     print(ord.quantity)
+            #     print(ord)
+            #     o.update(quantity=F('quantity')+product_.quantity) 
+            #     if F('quantity') == 0:
+            #         print('dddeleted')
+            #         ord.delete()
+            #         print('deleted')
+                
+                
+            # else:
+            #     print('hello from else')
+                # order.items.add(product_.id)
 
                 
 

@@ -19,13 +19,13 @@ class ItemOrderSerializer(serializers.ModelSerializer):
     product = ProductOrderSerializer()
     class Meta:
         model = OrderItem
-        exclude = ['is_ordered', 'id']
+        exclude = ['is_ordered', 'id', 'order']
 
 
 class CartSerializer(serializers.ModelSerializer):
     
     final_value = serializers.CharField(source = 'get_cart_total', read_only = True)
-    items = ItemOrderSerializer(many = True)
+    item = ItemOrderSerializer(many = True)
     class Meta:
         model = Order
-        fields = ('items', 'final_value')
+        fields = ('item', 'final_value')

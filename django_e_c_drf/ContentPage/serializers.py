@@ -3,6 +3,7 @@ from django.shortcuts import get_object_or_404
 
 from .models import Products, Brand, ProductSize
 from cart.models import Order, OrderItem
+from cart.service import get_client_ip
 
 
 class BrandSerializer(serializers.ModelSerializer):
@@ -41,9 +42,11 @@ class CreateOrderItemSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
     
-        order, created = OrderItem.objects.update_or_create(
+        order_item, created = OrderItem.objects.update_or_create(
             product = validated_data.get('product',None),
             quantity = validated_data.get('quantity', None),
             size = validated_data.get('size',None),
+            # order = Order.objects.get_or_create(ip = get_client_ip(request), is_ordered = False)
+
         )
-        return order
+        return order_item
