@@ -1,9 +1,7 @@
 from rest_framework import serializers
-from django.shortcuts import get_object_or_404
 
 from .models import Products, Brand, ProductSize
 from cart.models import Order, OrderItem
-from cart.service import get_client_ip
 
 
 class BrandSerializer(serializers.ModelSerializer):
@@ -39,14 +37,14 @@ class CreateOrderItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = OrderItem
         exclude = ('is_ordered',)
+        extra_kwargs = {'order':{'required': False}}
+        
 
     def create(self, validated_data):
-    
-        order_item, created = OrderItem.objects.update_or_create(
-            product = validated_data.get('product',None),
-            quantity = validated_data.get('quantity', None),
-            size = validated_data.get('size',None),
-            # order = Order.objects.get_or_create(ip = get_client_ip(request), is_ordered = False)
+        
+        ip = self.context.get('ip')
+        order = Order.objects.get(ip = ip, is_ordered = False)
+        validated_data.update({'order':order}) 
+        order_item, created = OrderItem.objects.update_or_create(**validated_data)
 
-        )
         return order_item
