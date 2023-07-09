@@ -29,43 +29,22 @@ class ProductDetailedView(APIView):
     def post(self, request, pk, format = None):
 
         ip = get_client_ip(request)
-        serializer = CreateOrderItemSerializer(data = request.data, context = {'ip':ip})
-        print(serializer.initial_data)
-        
 
-        order, created = Order.objects.get_or_create(ip = ip, is_ordered = False)
+        serializer = CreateOrderItemSerializer(data = request.data, context = {'ip':ip,'pk':pk})
+        
+        order, _ = Order.objects.get_or_create(ip = ip, is_ordered = False)
         
         if serializer.is_valid():
-
-
-
-            if serializer.validated_data['quantity'] == 0:
-                
-                ord = get_object_or_404(OrderItem,
-                                        product = serializer.validated_data['product'],
-                                        size =  serializer.validated_data['size'],
-                                        is_ordered = False,
-                                        order = order,
-                                        )   
-                ord.delete()            
+            
+            order_item_qs = OrderItem.objects.filter(product = Products.objects.get(id=pk),
+                                                  order = order,
+                                                  size = serializer.validated_data['size']
+                                                  )
+            
+            if order_item_qs.exists():
+                order_item_qs.update(quantity = F('quantity') + serializer.validated_data['quantity'])
             else:
-
-                order_item, oi_created = OrderItem.objects.get_or_create(
-                    product = serializer.validated_data['product'],
-                    size = serializer.validated_data['size'],
-                    is_ordered = False,
-                    order = order,
-                )
-                if oi_created:
-                    serializer.save()
-
-                else:
-                    delete_var = order_item.quantity + serializer.validated_data['quantity']
-                    if delete_var == 0:
-                        order_item.delete()
-                    else:
-                        order_item.quantity = F('quantity') + serializer.validated_data['quantity']   
-                        order_item.save()
+                serializer.save()
 
             return Response(status=201)
         

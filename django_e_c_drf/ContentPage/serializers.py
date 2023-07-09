@@ -37,14 +37,16 @@ class CreateOrderItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = OrderItem
         exclude = ('is_ordered',)
-        extra_kwargs = {'order':{'required': False}}
+        extra_kwargs = {'order':{'required': False},'product':{'required': False}}
         
 
     def create(self, validated_data):
         
         ip = self.context.get('ip')
+        pk = self.context.get('pk')
         order = Order.objects.get(ip = ip, is_ordered = False)
-        validated_data.update({'order':order}) 
-        order_item, created = OrderItem.objects.update_or_create(**validated_data)
+        product = Products.objects.get(id = pk)
+        validated_data.update({'order':order, 'product':product}) 
+        order_item = OrderItem.objects.create(**validated_data)
 
         return order_item
