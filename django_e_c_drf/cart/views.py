@@ -16,6 +16,7 @@ class CartView(APIView):
     def get(self, request):
 
         ip = get_client_ip(request)
+        
         client = Order.objects.get(ip = ip, is_ordered = False)
 
         serializer = CartSerializer(client)
