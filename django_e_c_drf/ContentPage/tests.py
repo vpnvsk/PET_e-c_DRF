@@ -35,11 +35,7 @@ class ContentPageTest(APITestCase):
         self.assertEqual(response.json().get('brand'), 'test_name')
 
 
-    # def test_fail_product(self):
-    #     response = self.client.get(reverse('product', kwargs={'pk':2}))
-    #     self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND) 
 
-    
     def test_create_order(self):
         response = self.client.post(reverse('product', kwargs={'pk':self.product.id}), self.data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
