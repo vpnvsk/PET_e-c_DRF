@@ -20,15 +20,6 @@ class CartTest(APITestCase):
         self.product.sizes.add(size,)
         ProductSize.objects.create(size = size, product=self.product, count=1)
 
-        # self.ip = '127.000.111.222'
-        # self.cl = Order.objects.create(ip=self.ip)
-
-        # self.order_item = OrderItem.objects.create(
-        #     product = self.product,
-        #     size = size,
-        #     order = self.cl
-        # )
-
         self.add_to_cart = {
             "size":size.id,
             "quantity": 5
@@ -52,13 +43,6 @@ class CartTest(APITestCase):
             "status":"DEL"
         }
     
-
-    # def test_post_order(self):
-            
-    #     response = self.client.post(reverse('product', kwargs={'pk':self.product.id}), self.add_to_cart)
-    #     self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-    #     ord  = Order.objects.all()
-    #     print(ord[0].ip)
 
 
 
