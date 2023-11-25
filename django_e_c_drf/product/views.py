@@ -14,7 +14,7 @@ from cart.models import Order, OrderItem
 class ProductListView(APIView):
 
     def get(self, request):
-        products = Products.objects.all()
+        products = Products.objects.select_related('brand', 'images').all()
         serializer = ProductListSerializers(products, many = True)
         return Response(serializer.data)
     
@@ -22,7 +22,7 @@ class ProductListView(APIView):
 class ProductDetailedView(APIView):
 
     def get(self,request, pk):
-        product = Products.objects.get(id=pk)
+        product = Products.objects.select_related('brand', 'images').prefetch_related('sizes').get(id=pk)
         serializer = ProductDetailedSerializer(product)
         return Response(serializer.data)
     
@@ -56,12 +56,12 @@ class ProductViewSet(viewsets.ViewSet):
     
     
     def list(self, request):
-        queryset = Products.objects.all()
+        queryset = Products.objects.select_related('brand', 'images').all()
         serializer = ProductListSerializers(queryset, many = True)
         return Response(serializer.data)
     
     def retrieve(self, request, pk):
-        queryset = Products.objects.all()
+        queryset = Products.objects.get(id=pk)
         product = get_object_or_404(queryset)
         serializer = ProductDetailedSerializer(product)
         return Response(serializer.data)

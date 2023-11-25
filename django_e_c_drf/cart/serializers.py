@@ -2,7 +2,7 @@ from rest_framework import serializers
 
 from .models import Order, OrderItem
 from .service import get_client_ip
-from ContentPage.models import Products, Size
+from product.models import Products, Size
 
 
 class ProductOrderSerializer(serializers.ModelSerializer):
@@ -19,7 +19,7 @@ class ItemOrderSerializer(serializers.ModelSerializer):
     product = ProductOrderSerializer()
     class Meta:
         model = OrderItem
-        exclude = ['is_ordered', 'id', 'order']
+        exclude = ['is_ordered', 'order']
 
 
 class CartSerializer(serializers.ModelSerializer):
@@ -31,11 +31,13 @@ class CartSerializer(serializers.ModelSerializer):
         fields = ('item', 'final_value')
 
 
-class DeleteFromCartSerializer(serializers.Serializer):
+class UpdateCartSerializer(serializers.Serializer):
 
-    status = serializers.CharField(max_length = 4)
-    product = serializers.CharField(max_length = 15)
-    size = serializers.CharField(max_length = 4)
+    quantity = serializers.IntegerField()
+    product_id = serializers.IntegerField()
+
+class DeleteFromCartSerializer(serializers.Serializer):
+    product_id = serializers.IntegerField()
 
 
 

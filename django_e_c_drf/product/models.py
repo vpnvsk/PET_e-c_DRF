@@ -31,7 +31,7 @@ class Size(models.Model):
     
 class Products(models.Model):
 
-    brand = models.ForeignKey(Brand, related_name='items', on_delete=models.CASCADE)
+    brand = models.ForeignKey(Brand, related_name='brand', on_delete=models.CASCADE)
     model_name = models.CharField(max_length=20)
     price =  models.DecimalField(max_digits = 6, decimal_places = 2)
     images = models.ForeignKey(Image, on_delete=models.CASCADE)

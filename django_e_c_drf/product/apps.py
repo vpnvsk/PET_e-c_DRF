@@ -1,6 +1,6 @@
 from django.apps import AppConfig
 
 
-class ContentpageConfig(AppConfig):
+class ProducteConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'ContentPage'
+    name = 'product'

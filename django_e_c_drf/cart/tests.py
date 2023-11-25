@@ -5,7 +5,7 @@ from rest_framework.test import APITestCase
 
 from .models import Order, OrderItem
 from .serializers import CartSerializer
-from ContentPage.models import Products, Brand, Size, ProductSize, Image
+from product.models import Products, Brand, Size, ProductSize, Image
 
 
 

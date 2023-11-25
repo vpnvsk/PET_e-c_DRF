@@ -1,5 +1,5 @@
 from django.db import models
-from ContentPage.models import Products, ProductSize,Size
+from product.models import Products, ProductSize,Size
 
 
 from django.conf import settings
